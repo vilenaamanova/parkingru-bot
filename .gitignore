@@ -1,0 +1,4 @@
+/node_modules
+.idea
+ssh_key
+ssh_key.pub
