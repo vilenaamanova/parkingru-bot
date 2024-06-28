@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 
 const token = '7277120640:AAFotsvLqsURfP5-kNrE1aCEu2sukUov7Gg'
+// const token = '6975013618:AAFlxz1RJry6MwsTEjuIlTzpshWM-O4jc48'
 const webAppUrl = 'https://master--lovely-gnome-63df9f.netlify.app'
 
 const bot = new TelegramBot(token, {polling: true});
@@ -16,18 +17,10 @@ bot.on('message', async (msg) => {
     const text = msg.text;
 
     if(text === '/start') {
-        await bot.sendMessage(chatId, 'Ниже появится кнопка, заполни форму', {
-            reply_markup: {
-                keyboard: [
-                    [{text: 'Заполнить форму', web_app: {url: webAppUrl + '/form'}}]
-                ]
-            }
-        })
-
-        await bot.sendMessage(chatId, 'Заходи в наш интернет магазин по кнопке ниже', {
+        await bot.sendMessage(chatId, 'Добро пожаловать в Parking.Ru! 🚙\n\nНаходите и оплачивайте парковку в нашем приложении.', {
             reply_markup: {
                 inline_keyboard: [
-                    [{text: 'Сделать заказ', web_app: {url: webAppUrl}}]
+                    [{text: 'Открыть приложение', web_app: {url: webAppUrl}}]
                 ]
             }
         })
@@ -66,6 +59,42 @@ app.post('/web-data', async (req, res) => {
         return res.status(500).json({})
     }
 })
+
+// app.post('/send-message', (req, res) => {
+//     const { chatId, message } = req.body;
+//
+//     bot.sendMessage(chatId, message)
+//         .then(() => {
+//             res.status(200).send('Message sent');
+//         })
+//         .catch(err => {
+//             res.status(500).send('Failed to send message');
+//         });
+// });
+//
+// app.get('/', (req, res) => {
+//     res.send('<h1>Welcome to the Telegram Web App</h1><button onclick="window.location.href=\'/app\'">Get Started</button>');
+// });
+//
+// app.get('/app', (req, res) => {
+//     res.send('<h1>Main Application</h1><footer><button onclick="navigate(\'home\')">Главная</button><button onclick="navigate(\'map\')">Карта</button><button onclick="navigate(\'payment\')">Оплата</button><button onclick="navigate(\'timer\')">Таймер</button></footer><script>function navigate(page) { window.location.href = `/${page}`; }</script>');
+// });
+//
+// app.get('/home', (req, res) => {
+//     res.send('<h1>Home Page</h1><footer><button onclick="navigate(\'home\')">Главная</button><button onclick="navigate(\'map\')">Карта</button><button onclick="navigate(\'payment\')">Оплата</button><button onclick="navigate(\'timer\')">Таймер</button></footer><script>function navigate(page) { window.location.href = `/${page}`; }</script>');
+// });
+//
+// app.get('/map', (req, res) => {
+//     res.send('<h1>Map Page</h1><footer><button onclick="navigate(\'home\')">Главная</button><button onclick="navigate(\'map\')">Карта</button><button onclick="navigate(\'payment\')">Оплата</button><button onclick="navigate(\'timer\')">Таймер</button></footer><script>function navigate(page) { window.location.href = `/${page}`; }</script>');
+// });
+//
+// app.get('/payment', (req, res) => {
+//     res.send('<h1>Payment Page</h1><footer><button onclick="navigate(\'home\')">Главная</button><button onclick="navigate(\'map\')">Карта</button><button onclick="navigate(\'payment\')">Оплата</button><button onclick="navigate(\'timer\')">Таймер</button></footer><script>function navigate(page) { window.location.href = `/${page}`; }</script>');
+// });
+//
+// app.get('/timer', (req, res) => {
+//     res.send('<h1>Timer Page</h1><footer><button onclick="navigate(\'home\')">Главная</button><button onclick="navigate(\'map\')">Карта</button><button onclick="navigate(\'payment\')">Оплата</button><button onclick="navigate(\'timer\')">Таймер</button></footer><script>function navigate(page) { window.location.href = `/${page}`; }</script>');
+// });
 
 const PORT = 8000;
 
