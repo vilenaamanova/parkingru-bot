@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require('cors');
 
 const token = '7277120640:AAFotsvLqsURfP5-kNrE1aCEu2sukUov7Gg'
-// const token = '6975013618:AAFlxz1RJry6MwsTEjuIlTzpshWM-O4jc48'
 const webAppUrl = 'https://master--lovely-gnome-63df9f.netlify.app'
 
 const bot = new TelegramBot(token, {polling: true});
@@ -11,6 +10,49 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+const parkingZones = [
+    {
+        id: 1,
+        name: "Парковочная зона №7814",
+        location: "Кронверкский округ, Санкт-Петербург",
+        distance: 500,
+        totalSpaces: 50,
+        hotline: "88005553535",
+        userCars: ["Car1", "Car2"]
+    },
+    {
+        id: 2,
+        name: "Парковочная зона №7820",
+        location: "Центральный район, Санкт-Петербург",
+        distance: 300,
+        totalSpaces: 30,
+        hotline: "88005553535",
+        userCars: ["Car3"]
+    }
+];
+
+let currentBooking = {
+    zoneNumber: '7814',
+    location: 'Кронверкский округ, Санкт-Петербург',
+    distance: '500 м',
+    startTime: new Date(),
+    endTime: new Date(),
+    status: 'Активен',
+    amount: 200,
+};
+
+let bookingHistory = [
+    { date: '2023-01-01', time: '10:00', distance: '300 м', amount: 150 },
+    { date: '2023-01-02', time: '11:30', distance: '400 м', amount: 180 },
+    // ...
+];
+
+let myCars = [
+    { brand: 'Toyota', number: 'А123ВС' },
+    { brand: 'BMW', number: 'В456ЕН' },
+    // ...
+];
 
 bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
@@ -26,39 +68,39 @@ bot.on('message', async (msg) => {
         })
     }
 
-    if(msg?.web_app_data?.data) {
-        try {
-            const data = JSON.parse(msg?.web_app_data?.data)
-            console.log(data)
-            await bot.sendMessage(chatId, 'Спасибо за обратную связь!')
-            await bot.sendMessage(chatId, 'Ваша страна: ' + data?.country);
-            await bot.sendMessage(chatId, 'Ваша улица: ' + data?.street);
-
-            setTimeout(async () => {
-                await bot.sendMessage(chatId, 'Всю информацию вы получите в этом чате');
-            }, 3000)
-        } catch (e) {
-            console.log(e);
-        }
-    }
+    // if(msg?.web_app_data?.data) {
+    //     try {
+    //         const data = JSON.parse(msg?.web_app_data?.data)
+    //         console.log(data)
+    //         await bot.sendMessage(chatId, 'Спасибо за обратную связь!')
+    //         await bot.sendMessage(chatId, 'Ваша страна: ' + data?.country);
+    //         await bot.sendMessage(chatId, 'Ваша улица: ' + data?.street);
+    //
+    //         setTimeout(async () => {
+    //             await bot.sendMessage(chatId, 'Всю информацию вы получите в этом чате');
+    //         }, 3000)
+    //     } catch (e) {
+    //         console.log(e);
+    //     }
+    // }
 });
 
-app.post('/web-data', async (req, res) => {
-    const {queryId, products = [], totalPrice} = req.body;
-    try {
-        await bot.answerWebAppQuery(queryId, {
-            type: 'article',
-            id: queryId,
-            title: 'Успешная покупка',
-            input_message_content: {
-                message_text: ` Поздравляю с покупкой, вы приобрели товар на сумму ${totalPrice}, ${products.map(item => item.title).join(', ')}`
-            }
-        })
-        return res.status(200).json({});
-    } catch (e) {
-        return res.status(500).json({})
-    }
-})
+// app.post('/web-data', async (req, res) => {
+//     const {queryId, products = [], totalPrice} = req.body;
+//     try {
+//         await bot.answerWebAppQuery(queryId, {
+//             type: 'article',
+//             id: queryId,
+//             title: 'Успешная покупка',
+//             input_message_content: {
+//                 message_text: ` Поздравляю с покупкой, вы приобрели товар на сумму ${totalPrice}, ${products.map(item => item.title).join(', ')}`
+//             }
+//         })
+//         return res.status(200).json({});
+//     } catch (e) {
+//         return res.status(500).json({})
+//     }
+// })
 
 // app.post('/send-message', (req, res) => {
 //     const { chatId, message } = req.body;
@@ -71,30 +113,68 @@ app.post('/web-data', async (req, res) => {
 //             res.status(500).send('Failed to send message');
 //         });
 // });
-//
-// app.get('/', (req, res) => {
-//     res.send('<h1>Welcome to the Telegram Web App</h1><button onclick="window.location.href=\'/app\'">Get Started</button>');
-// });
-//
-// app.get('/app', (req, res) => {
-//     res.send('<h1>Main Application</h1><footer><button onclick="navigate(\'home\')">Главная</button><button onclick="navigate(\'map\')">Карта</button><button onclick="navigate(\'payment\')">Оплата</button><button onclick="navigate(\'timer\')">Таймер</button></footer><script>function navigate(page) { window.location.href = `/${page}`; }</script>');
-// });
-//
-// app.get('/home', (req, res) => {
-//     res.send('<h1>Home Page</h1><footer><button onclick="navigate(\'home\')">Главная</button><button onclick="navigate(\'map\')">Карта</button><button onclick="navigate(\'payment\')">Оплата</button><button onclick="navigate(\'timer\')">Таймер</button></footer><script>function navigate(page) { window.location.href = `/${page}`; }</script>');
-// });
-//
-// app.get('/map', (req, res) => {
-//     res.send('<h1>Map Page</h1><footer><button onclick="navigate(\'home\')">Главная</button><button onclick="navigate(\'map\')">Карта</button><button onclick="navigate(\'payment\')">Оплата</button><button onclick="navigate(\'timer\')">Таймер</button></footer><script>function navigate(page) { window.location.href = `/${page}`; }</script>');
-// });
-//
-// app.get('/payment', (req, res) => {
-//     res.send('<h1>Payment Page</h1><footer><button onclick="navigate(\'home\')">Главная</button><button onclick="navigate(\'map\')">Карта</button><button onclick="navigate(\'payment\')">Оплата</button><button onclick="navigate(\'timer\')">Таймер</button></footer><script>function navigate(page) { window.location.href = `/${page}`; }</script>');
-// });
-//
-// app.get('/timer', (req, res) => {
-//     res.send('<h1>Timer Page</h1><footer><button onclick="navigate(\'home\')">Главная</button><button onclick="navigate(\'map\')">Карта</button><button onclick="navigate(\'payment\')">Оплата</button><button onclick="navigate(\'timer\')">Таймер</button></footer><script>function navigate(page) { window.location.href = `/${page}`; }</script>');
-// });
+
+app.get('/api/user', (req, res) => {
+    const telegramLogin = 'user_telegram_login'; // Замените на реальное имя пользователя из Telegram
+
+    res.json({
+        telegramLogin,
+        currentBooking,
+        bookingHistory,
+        myCars,
+    });
+});
+
+app.get('/api/parking/:id', (req, res) => {
+    const parkingId = parseInt(req.params.id, 10);
+    const parkingZone = parkingZones.find(zone => zone.id === parkingId);
+    if (parkingZone) {
+        res.json(parkingZone);
+    } else {
+        res.status(404).send('Парковочная зона не найдена');
+    }
+});
+
+app.post('/api/endParking', (req, res) => {
+    parkingData.timer = null;
+    res.status(200).send('Parking ended successfully.');
+});
+
+app.post('/api/extendParking', (req, res) => {
+    const { duration } = req.body;
+
+    parkingData.timer = {
+        startTime: Date.now(),
+        duration: duration,
+    };
+    res.status(200).send('Parking extended successfully.');
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+let balance = 1000;
+
+app.get('/api/balance', (req, res) => {
+    res.json({ balance });
+});
+
+app.post('/api/deposit', (req, res) => {
+    const { amount, paymentMethod, phoneNumber } = req.body;
+
+    if (!amount || isNaN(amount)) {
+        return res.status(400).send('Invalid amount');
+    }
+
+    // Логика пополнения баланса
+    balance += parseFloat(amount);
+
+    // Можно добавить дополнительную логику для обработки способа оплаты и номера телефона
+    res.status(200).send('Balance deposited successfully.');
+});
 
 const PORT = 8000;
 
