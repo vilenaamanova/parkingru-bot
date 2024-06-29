@@ -1,5 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const token = '7277120640:AAFotsvLqsURfP5-kNrE1aCEu2sukUov7Gg'
@@ -10,6 +11,8 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const parkingZones = [
     {
@@ -140,21 +143,33 @@ app.post('/api/endParking', (req, res) => {
     res.status(200).send('Parking ended successfully.');
 });
 
+let parkingData = {
+    timer: {
+        startTime: Date.now(),
+        duration: 0,
+    }
+};
+
 app.post('/api/extendParking', (req, res) => {
     const { duration } = req.body;
 
-    parkingData.timer = {
-        startTime: Date.now(),
-        duration: duration,
-    };
-    res.status(200).send('Parking extended successfully.');
+    if (typeof duration === 'number' && duration > 0) {
+        parkingData.timer = {
+            startTime: Date.now(),
+            duration: duration,
+        };
+
+        res.status(200).send('Parking extended successfully.');
+    } else {
+        res.status(400).send('Invalid duration');
+    }
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// app.use(express.static(path.join(__dirname, 'public')));
+//
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// });
 
 let balance = 1000;
 
